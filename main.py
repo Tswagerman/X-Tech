@@ -4,11 +4,7 @@ import wave
 import numpy as np
 import whisper
 
-# Read API key from api.txt file
-with open("api.txt", "r") as f:
-    api_key = f.read().strip()
 
-openai.api_key = api_key
 
 # Set up audio recording parameters
 FORMAT = pyaudio.paInt16

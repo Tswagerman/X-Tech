@@ -5,11 +5,16 @@ import numpy as np
 import whisper
 import difflib  # Used for string similarity comparison
 
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request, session
 
 app = Flask(__name__)
 
-# Initialize speech recognition recognizer
+# Read API key from api.txt file
+with open("api.txt", "r") as f:
+    api_key = f.read().strip()
+
+openai.api_key = api_key
+app.secret_key = api_key
 
 # Function to record audio from the microphone
 def record_audio():
@@ -49,40 +54,73 @@ def analyze_audio():
     except Exception as e:
         print(f"Error analyzing audio: {e}")
         return []
-
-# Function to compare spoken input with desired input using string similarity
+    
 def compare_input(spoken_text, desired_text):
     # Calculate a similarity score between the spoken and desired text
     print(f"Spoken text: {spoken_text}")
     similarity = difflib.SequenceMatcher(None, spoken_text, desired_text).ratio()
     return similarity
 
-@app.route('/test')
-def test():
-    # Initialize variables for desired name and CPR number
+@app.route('/')
+def index():
+    session.clear()  # Clear the session data
+    return redirect(url_for('name_confirmation'))
+
+@app.route('/test_interface')
+def test_interface():
+    return render_template('test_interface.html')
+
+@app.route('/name_confirmation', methods=['GET', 'POST'])
+def name_confirmation():
     desired_name = "John Doe"  # Replace with the desired name
+
+    if request.method == 'POST':
+        # Start recording audio
+        record_audio()
+
+        # Use speech recognition to transcribe spoken input
+        spoken_text = analyze_audio()
+
+        # Compare spoken input to desired input
+        name_similarity = compare_input(spoken_text, desired_name)
+        print("Name similarity: ", name_similarity)
+
+        # Store the name similarity score in the session
+        session['name_similarity'] = name_similarity
+
+        return redirect(url_for('cpr_confirmation'))
+
+    return render_template('name_confirmation.html')
+
+@app.route('/cpr_confirmation', methods=['GET', 'POST'])
+def cpr_confirmation():
     desired_cpr = "123456-7890"  # Replace with the desired CPR number
 
-    # Start recording audio
-    record_audio()
+    if request.method == 'POST':
+        # Start recording audio
+        record_audio()
 
-    # Use speech recognition to transcribe spoken input
-    spoken_text = analyze_audio()
+        # Use speech recognition to transcribe spoken input
+        spoken_text = analyze_audio()
 
-    # Compare spoken input to desired input
-    name_similarity = compare_input(spoken_text, desired_name)
-    cpr_similarity = compare_input(spoken_text, desired_cpr)
+        # Compare spoken input to desired input
+        cpr_similarity = compare_input(spoken_text, desired_cpr)
+        print("CPR similarity: ", cpr_similarity)
 
-    # Determine if the spoken input matches the desired input
-    if name_similarity >= 0.8:
-        name_result = "Name: Matched"
-    else:
-        name_result = "Name: Not Matched"
+        # Store the CPR similarity score in the session
+        session['cpr_similarity'] = cpr_similarity
 
-    if cpr_similarity >= 0.8:
-        cpr_result = "CPR: Matched"
-    else:
-        cpr_result = "CPR: Not Matched"
+        return redirect(url_for('result'))
+
+    return render_template('cpr_confirmation.html')
+
+@app.route('/result')
+def result():
+    name_similarity = session.get('name_similarity', 0)
+    cpr_similarity = session.get('cpr_similarity', 0)
+
+    name_result = "Name: Matched" if name_similarity >= 0.8 else "Name: Not Matched"
+    cpr_result = "CPR: Matched" if cpr_similarity >= 0.8 else "CPR: Not Matched"
 
     return f'{name_result}, {cpr_result}'
 
@@ -91,6 +129,6 @@ if __name__ == '__main__':
     CHANNELS = 1
     RATE = 16000
     CHUNK = 1024
-    RECORD_SECONDS = 10
+    RECORD_SECONDS = 5
 
     app.run(debug=True)

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CPR Confirmation</title>
+</head>
+<body>
+    <h1>CPR Confirmation</h1>
+    
+    <p>Listening for spoken CPR...</p>
+    
+    <form method="POST" action="{{ url_for('cpr_confirmation') }}" id="cpr_confirmation_form">
+        <input type="hidden" name="spoken_cpr" id="spoken_cpr" value="">
+    </form>
+
+    <script>
+        // Start recording audio when the page loads
+        window.onload = function() {
+            // Code to start recording audio (you can add your logic here)
+            console.log("Recording audio for CPR confirmation...");
+            
+            // Simulate audio recording completion after 5 seconds (you should replace this with actual audio recording logic)
+            setTimeout(function() {
+                var spokenCPR = "123456-7890"; // Replace with the actual spoken CPR
+                document.getElementById('spoken_cpr').value = spokenCPR;
+                document.getElementById('cpr_confirmation_form').submit();
+            }, 5000); // Simulating 5 seconds of audio recording
+        };
+    </script>
+</body>
+</html>
