@@ -2,23 +2,22 @@
 # Ignore all directories named "__pycache__"
 __pycache__/
 
-# Ignore all files named "*.pyc"
+# Ignore all files named "*."
 *.pyc
+*.cfg
 
 # Ignore all files named "*.pyo"
 *.pyo
 
-# Ignore all directories named "venv" (for virtual environments)
-venv/
-
-# Ignore all directories named "env" (for virtual environments)
-env/
-
 # Ignore all directories named "lib" (common in virtual environments)
-lib/
+Lib/
 
 # Ignore all directories named "include" (common in virtual environments)
 include/
 
 # Ignore all directories named "site-packages" (common in virtual environments)
 site-packages/
+
+#Ignore the Scripts folder (common in virtual environments) and share
+Scripts/
+share/
