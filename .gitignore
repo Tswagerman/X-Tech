@@ -6,6 +6,7 @@ __pycache__/
 *.pyc
 *.cfg
 *.pyo
+*.wav
 
 #Ignore api documentation
 api.txt
