@@ -39,7 +39,7 @@ def record_audio():
     stream.close()
     audio.terminate()
 
-    # Save the recorded audio frames as a WAV file
+    # Save the recorded audio frames as a WAV file  
     with wave.open("audio.wav", "wb") as wav_file:
         wav_file.setnchannels(CHANNELS)
         wav_file.setsampwidth(audio.get_sample_size(FORMAT))
