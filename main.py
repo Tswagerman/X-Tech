@@ -2,6 +2,7 @@ import openai
 import pyaudio
 import wave
 import numpy as np
+import whisper
 
 # Read API key from api.txt file
 with open("api.txt", "r") as f:
@@ -48,13 +49,10 @@ def record_audio():
 # Function to send audio to Whisper for analysis
 def analyze_audio():
     try:
-        response = openai.File.create(
-            purpose="transcription",
-            file=open("audio.wav", "rb"),
-            model="whisper-1",
-            # Other optional parameters like max_tokens, temperature, etc.
-        )
-        return response['transcriptions']
+        model = whisper.load_model("base")
+        result = model.transcribe("audio.wav")
+        print(result["text"])
+        return result["text"]
     except Exception as e:
         print(f"Error analyzing audio: {e}")
         return []
