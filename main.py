@@ -1,9 +1,13 @@
 import openai
 import pyaudio
+import wave
 import numpy as np
 
-# Initialize OpenAI API with your API key
-openai.api_key = "YOUR_API_KEY"
+# Read API key from api.txt file
+with open("api.txt", "r") as f:
+    api_key = f.read().strip()
+
+openai.api_key = api_key
 
 # Set up audio recording parameters
 FORMAT = pyaudio.paInt16
@@ -34,14 +38,20 @@ def record_audio():
     stream.close()
     audio.terminate()
 
-    return b''.join(frames)
+    # Save the recorded audio frames as a WAV file
+    with wave.open("audio.wav", "wb") as wav_file:
+        wav_file.setnchannels(CHANNELS)
+        wav_file.setsampwidth(audio.get_sample_size(FORMAT))
+        wav_file.setframerate(RATE)
+        wav_file.writeframes(b"".join(frames))
 
 # Function to send audio to Whisper for analysis
-def analyze_audio(audio_data):
+def analyze_audio():
     try:
-        response = openai.Audio.create(
-            model="whisper-large",
-            audio=audio_data,
+        response = openai.File.create(
+            purpose="transcription",
+            file=open("audio.wav", "rb"),
+            model="whisper-1",
             # Other optional parameters like max_tokens, temperature, etc.
         )
         return response['transcriptions']
@@ -54,10 +64,10 @@ def main():
     try:
         while True:
             # Record audio from the microphone
-            audio_data = record_audio()
+            record_audio()
 
             # Send audio to Whisper for analysis
-            transcriptions = analyze_audio(audio_data)
+            transcriptions = analyze_audio()
 
             # Process and analyze transcriptions for glaucoma detection
             # Implement your glaucoma detection logic here
