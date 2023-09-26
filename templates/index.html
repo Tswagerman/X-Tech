@@ -1,0 +1,50 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Glaucoma Detection</title>
+</head>
+<body>
+    <h1>Welcome to Glaucoma Detection</h1>
+    <p>Please state your name:</p>
+    <p id="name-spoken"></p>
+    <p>Please state your CPR number (format: xxxxxx-xxxx):</p>
+    <p id="cpr-spoken"></p>
+    <button id="start-test-button">Start Test</button>
+
+    <script>
+        // Use the SpeechRecognition API to capture spoken input
+        const recognition = new webkitSpeechRecognition();
+        recognition.interimResults = true;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript;
+            if (document.activeElement.id === 'name-spoken') {
+                document.getElementById('name-spoken').textContent = spokenText;
+            } else if (document.activeElement.id === 'cpr-spoken') {
+                document.getElementById('cpr-spoken').textContent = spokenText;
+            }
+        };
+
+        document.getElementById('name-spoken').addEventListener('click', () => {
+            recognition.start();
+        });
+
+        document.getElementById('cpr-spoken').addEventListener('click', () => {
+            recognition.start();
+        });
+
+        document.getElementById('start-test-button').addEventListener('click', () => {
+            // Extract spoken name and CPR number from the page
+            const nameSpoken = document.getElementById('name-spoken').textContent.trim();
+            const cprSpoken = document.getElementById('cpr-spoken').textContent.trim();
+
+            // Send the captured spoken data to the server using JavaScript (e.g., AJAX) or submit a form.
+            // You can replace this with your implementation to start the test.
+
+            // For demonstration purposes, let's display the captured data:
+            alert(`Name: ${nameSpoken}, CPR: ${cprSpoken}`);
+        });
+    </script>
+</body>
+</html>

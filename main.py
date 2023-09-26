@@ -15,7 +15,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 16000  # Adjust the sample rate as needed
 CHUNK = 1024
-RECORD_SECONDS = 5  # Adjust the duration of each recording as needed
+RECORD_SECONDS = 20  # Adjust the duration of each recording as needed
 
 # Function to record audio from the microphone
 def record_audio():
@@ -50,7 +50,7 @@ def record_audio():
 def analyze_audio():
     try:
         model = whisper.load_model("base")
-        result = model.transcribe("audio.wav")
+        result = model.transcribe("audio.wav", fp16=False)
         print(result["text"])
         return result["text"]
     except Exception as e:
