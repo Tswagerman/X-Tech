@@ -67,8 +67,7 @@ def main():
             # Send audio to Whisper for analysis
             transcriptions = analyze_audio()
 
-            # Process and analyze transcriptions for glaucoma detection
-            # Implement your glaucoma detection logic here
+            # Process and analyze transcriptions
             
     except KeyboardInterrupt:
         print("Exiting...")
