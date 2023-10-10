@@ -48,7 +48,7 @@ def record_audio():
 def analyze_audio():
     try:
         model = whisper.load_model("base")
-        result = model.transcribe("audio.wav", fp16=False)
+        result = model.transcribe("audio.wav", fp16=False, language="da")
         print(result["text"])
         return result["text"]
     except Exception as e:
@@ -72,7 +72,7 @@ def test_interface():
 
 @app.route('/name_confirmation', methods=['GET', 'POST'])
 def name_confirmation():
-    desired_name = "John Doe"  # Replace with the desired name
+    desired_name = "Ja"  # Replace with the desired name
 
     if request.method == 'POST':
         # Start recording audio
@@ -94,7 +94,7 @@ def name_confirmation():
 
 @app.route('/cpr_confirmation', methods=['GET', 'POST'])
 def cpr_confirmation():
-    desired_cpr = "123456-7890"  # Replace with the desired CPR number
+    desired_cpr = "nej"  # Replace with the desired CPR number
 
     if request.method == 'POST':
         # Start recording audio
@@ -129,6 +129,6 @@ if __name__ == '__main__':
     CHANNELS = 1
     RATE = 16000
     CHUNK = 1024
-    RECORD_SECONDS = 5
+    RECORD_SECONDS = 2
 
     app.run(debug=True)
