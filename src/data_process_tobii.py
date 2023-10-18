@@ -6,6 +6,9 @@ import seaborn as sns
 
 pd.options.mode.chained_assignment = None  # Suppress warnings for false positives in this case
 
+preprocessed_data_path = r'C:\Users\Thoma\xtech\Data\preprocessed\gaze_databox.csv'
+processed_data_path = r'C:\Users\Thoma\xtech\Data\processed\data.csv'
+
 def merge_intervals(df):
     combined_intervals = []
     current_interval = None
@@ -83,7 +86,7 @@ def classify_saccade_or_fixation(df, velocity_threshold):
     return df
 
 # Read your gaze data from a CSV file
-df = pd.read_csv(r'C:\Users\Thoma\xtech\Data\preprocessed\gaze_databox.csv')
+df = pd.read_csv(preprocessed_data_path)
 # Remove rows with 'nan' values
 df = df.dropna()
 
@@ -107,13 +110,13 @@ columns_to_keep = [
 merged_intervals = merged_intervals[columns_to_keep]
 
 # Save the sorted, combined DataFrame to a CSV file
-merged_intervals.to_csv(r'C:\Users\Thoma\xtech\Data\processed\data.csv', index=False)
+merged_intervals.to_csv(processed_data_path, index=False)
 print("len = ", len(merged_intervals))
 
 # Create a heatmap of saccade positions
 plt.figure(figsize=(10, 6))
 
-# Invert the y-axis, coordinate system starts at 0,0 at top 
+# Invert the y-axis, coordinate system starts at 0,0 at top left corner
 merged_intervals['left_gaze_point_on_display_area_y'] = 1 - merged_intervals['left_gaze_point_on_display_area_y']
 merged_intervals['right_gaze_point_on_display_area_y'] = 1 - merged_intervals['right_gaze_point_on_display_area_y']
 
