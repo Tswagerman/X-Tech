@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 from process_data import process_data, np
+import os
 
 def plot_saccades_and_heatmap(merged_intervals):
     # Extract the 'position' column as a list of lists
@@ -74,10 +75,18 @@ def plot_saccades_and_heatmap(merged_intervals):
 
 
 def main():
-    preprocessed_data_path = r'C:\Users\Thoma\xtech\Data\preprocessed\gaze_data_LEFT&RIGHT.csv'
-    processed_data_path = r'C:\Users\Thoma\xtech\Data\processed\data.csv'
-    velocity_threshold = 20  # Adjust this threshold as needed
+    # Get the directory of the current script (main.py)
+    path = os.path.dirname(__file__)
 
+    # Specify the relative path to your CSV file
+    preprocess_path = '../Data/preprocessed/gaze_data_top_left.csv'
+    # Combine the current script directory and the relative path to get the absolute file path
+    preprocessed_data_path = os.path.normpath(os.path.join(path, preprocess_path))
+
+    process_path = '..\Data\processed\data.csv'
+    processed_data_path = os.path.normpath(os.path.join(path, process_path))
+
+    velocity_threshold = 20  # Adjust this threshold as needed
     df = process_data(preprocessed_data_path, processed_data_path, velocity_threshold)
     plot_saccades_and_heatmap(df)
 
