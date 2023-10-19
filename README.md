@@ -17,7 +17,7 @@ Before running the code, make sure you have the required libraries installed. Yo
 
 ```console
 python main.py
-'''
+```
 
 ### 2. Saccade Classification
 
@@ -46,6 +46,6 @@ The script will generate and display visualizations showing saccade duration hea
 ## Requirements
 
 You can install the required libraries by running:
-'''bash
+```bash
 pip install -r requirements.txt
-'''
+```
