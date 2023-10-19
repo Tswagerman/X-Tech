@@ -79,7 +79,7 @@ def main():
     path = os.path.dirname(__file__)
 
     # Specify the relative path to your CSV file
-    preprocess_path = '../Data/preprocessed/gaze_data_top_left.csv'
+    preprocess_path = '../Data/preprocessed/gaze_data1_Thomas.csv'
     # Combine the current script directory and the relative path to get the absolute file path
     preprocessed_data_path = os.path.normpath(os.path.join(path, preprocess_path))
 
