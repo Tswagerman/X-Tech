@@ -7,11 +7,11 @@ def plot_saccades_and_heatmap(merged_intervals):
     # Extract the 'position' column as a list of lists
     positionsL = merged_intervals[merged_intervals['type'] == 'saccade']['positionLeft'].tolist()
     positionsR = merged_intervals[merged_intervals['type'] == 'saccade']['positionRight'].tolist()
-    print("positionsL = ", positionsL, "positionsR = ", positionsR)
+    
     # For the left eye positions
     x_coordinatesL = [pos[0][0] for pos in positionsL]
     y_coordinatesL = [pos[0][1] for pos in positionsL]
-    print("x_coordinatesL = ", x_coordinatesL, "y_coordinatesL = ", y_coordinatesL)
+    
     # For the right eye positions
     x_coordinatesR = [pos[0][0] for pos in positionsR]
     y_coordinatesR = [pos[0][1] for pos in positionsR]
