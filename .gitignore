@@ -8,7 +8,7 @@ __pycache__/
 *.pyo
 *.wav
 
-#Ignore api documentation
+# Ignore api documentation
 api.txt
 
 # Ignore all directories named "lib" (common in virtual environments)
@@ -23,10 +23,13 @@ include/
 # Ignore all directories named "site-packages" (common in virtual environments)
 site-packages/
 
-#Ignore the Scripts folder (common in virtual environments) and share
+# Ignore the Scripts folder (common in virtual environments) and share
 Scripts/
 share/
 
-#Ignore datacollection file and irrelevant .py scripts
+# Ignore get-pip.py
+get-pip.py
+
+# Ignore datacollection file and irrelevant .py scripts
 src/tobiilsl.py
 src/data_process_tobii.py
