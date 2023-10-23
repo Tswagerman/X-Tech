@@ -40,6 +40,6 @@ The script will generate and display visualizations of saccades by creating scat
 ## File Structure
 
     main.py: Main script for executing the analysis and generating visualizations.
-    process_data.py: Contains functions for data preprocessing.
+    process_data.py: Contains functions for dataprocessing.
 
 
