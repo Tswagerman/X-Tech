@@ -34,7 +34,7 @@ python main.py
 
 ### 3. Data Visualization
 
-The script will generate and display visualizations of saccades by creating scatterplots that display their positions on the screen. These saccades are color-coded based on their duration relative to all the saccades detected. In addition a heatmap of the density of the saccades is plotted.
+The script will generate and display visualizations of saccades by creating scatterplots that display their positions on the screen. These saccades are color-coded based on their duration relative to all the saccades detected. In addition a heatmap of the density of the saccades is plotted. The following data is a visualization of Data/preprocessed/gaze_data1_Thomas.csv
 ![alt text](https://github.com/Tswagerman/X-Tech/blob/main/Data/processed/results_saccade%20location_heatmap.png)
 
 ## File Structure
