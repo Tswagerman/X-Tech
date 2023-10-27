@@ -7,28 +7,30 @@ pd.options.mode.chained_assignment = None  # Suppress warnings for false positiv
 def merge_intervals(df):
     combined_intervals = []
     current_interval = None
-    end = 0
+    time_diff = None
     for index, row in df.iterrows():
         if current_interval is None:
             current_interval = row
-            current_interval['angular_velocities'] = [row['angular_velocity']]  # Initialize the list
+            current_interval['angular_velocities'] = [row['angular_velocity']]  # Initialize the list of rapid eye movement observations
             current_interval['positionLeft'] = [[row['left_gaze_point_on_display_area_x'], row['left_gaze_point_on_display_area_y']]]
             current_interval['positionRight'] = [[row['right_gaze_point_on_display_area_x'], row['right_gaze_point_on_display_area_y']]]
             current_interval['start_time'] = row['device_time_stamp']
-        end = row['device_time_stamp']
-        if index == 0:
-            time_diff = row['device_time_stamp']
+        current_interval['end_time']  = row['device_time_stamp']
+        if index != 0:
+           time_diff = row['device_time_stamp'] - current_interval['end_time'] 
         else:
-            time_diff = row['device_time_stamp'] - end
+            continue
         if time_diff <= 20 and row['type'] == current_interval['type']:
             current_interval['angular_velocities'].append(row['angular_velocity'])
             current_interval['positionLeft'].append([row['left_gaze_point_on_display_area_x'], row['left_gaze_point_on_display_area_y']])
             current_interval['positionRight'].append([row['right_gaze_point_on_display_area_x'], row['right_gaze_point_on_display_area_y']])
-            current_interval['end_time'] = end
         else:
-            current_interval['end_time'] = row['device_time_stamp']
             current_interval['duration'] = current_interval['end_time'] - current_interval['start_time']
             current_interval['size'] = len(current_interval['angular_velocities'])
+            # Need for a minimal duration criterion 
+            # if current_interval['duration'] > 20
+            if current_interval['duration'] < 20:
+                current_interval['type'] = 'shortSaccade'
             combined_intervals.append(current_interval)
             # Current interval is done, start a new one
             current_interval = None
@@ -72,13 +74,13 @@ def classify_saccade_or_fixation(df, velocity_threshold):
 
     return df
 
+
 def process_data(preprocessed_data_path, processed_data_path, velocity_threshold):
     # Read your gaze data from a CSV file
     df = pd.read_csv(preprocessed_data_path)
     # Remove rows with 'nan' values
     df = df.dropna()
     print("length df after dropping rows containing NAN = ", len(df))
-
     # Define a velocity threshold to classify saccades
     velocity_threshold = 20  # Adjust this threshold as needed
 
