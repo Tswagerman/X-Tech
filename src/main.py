@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from process_data import process_data, np
 import os
-
+'''
 def plot_saccades(merged_intervals):
     # Extract the 'position' column as a list of lists
     positionsL = merged_intervals[merged_intervals['type'] == 'saccade']['positionLeft'].tolist()
@@ -70,6 +70,60 @@ def plot_saccades(merged_intervals):
 
     # Add a colorbar
     cbar = plt.colorbar(cax, label='Count')
+
+    ax.invert_yaxis()
+
+    # Display the plot
+    plt.show()'''
+
+def plot_saccades(merged_intervals):
+    # Extract the 'position' column as a list of lists
+    positionsL = merged_intervals[merged_intervals['type'] == 'saccade']['positionLeft'].tolist()
+    positionsR = merged_intervals[merged_intervals['type'] == 'saccade']['positionRight'].tolist()
+
+    # For the left eye positions
+    x_coordinatesL = [pos[0][0] for pos in positionsL]
+    y_coordinatesL = [pos[0][1] for pos in positionsL]
+
+    # For the right eye positions
+    x_coordinatesR = [pos[0][0] for pos in positionsR]
+    y_coordinatesR = [pos[0][1] for pos in positionsR]
+
+    # Create a list of normalized saccade durations
+    normalized_durations = merged_intervals[merged_intervals['type'] == 'saccade']['normalized_duration'].tolist()
+    
+    # Create a list of actual saccade durations
+    actual_durations = merged_intervals[merged_intervals['type'] == 'saccade']['duration'].tolist()
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.set_xlim(0, 1)  # Set X-axis limits
+    ax.set_ylim(0, 1)  # Set Y-axis limits
+
+    for i in range(len(positionsL)):
+        xL, yL = zip(*positionsL[i])  # Extract x and y coordinates from the left eye data
+        xR, yR = zip(*positionsR[i])  # Extract x and y coordinates from the right eye data
+
+        # Color the lines based on normalized duration
+        cmap = plt.get_cmap('coolwarm')
+        color = cmap(normalized_durations[i])
+
+        # Plot the lines for the left and right eyes
+        ax.plot(xL, yL, color=color, label=f'Saccade {i + 1}')
+        ax.plot(xR, yR, color=color)
+
+    # Set labels and title for the saccade heatmap
+    ax.set_xlabel('X coordinate on display')
+    ax.set_ylabel('Y coordinate on display')
+    ax.set_title('Saccade Colored by Normalized Duration')
+
+    # Show a colorbar indicating normalized duration
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=min(normalized_durations), vmax=max(normalized_durations)))
+    sm.set_array([])  # Required for the ScalarMappable
+    cbar = plt.colorbar(sm, ax=ax, label='Normalized Duration')
+
+    # Add a scale with actual saccade durations
+    scale_text = f'Min Duration: {min(actual_durations):.2f} ms\nMax Duration: {max(actual_durations):.2f} ms'
+    ax.text(0.05, -0.05, scale_text, fontsize=10, bbox=dict(facecolor='white', alpha=0.7))
 
     ax.invert_yaxis()
 

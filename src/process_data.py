@@ -4,6 +4,15 @@ from scipy.spatial.transform import Rotation
 
 pd.options.mode.chained_assignment = None  # Suppress warnings for false positives in this case
 
+def filter_out_of_range_gaze(df):
+    # Filter eye movements outside of the 0 to 1 value range
+    df = df[(df['left_gaze_point_on_display_area_x'] >= 0) & (df['left_gaze_point_on_display_area_x'] <= 1)
+            & (df['left_gaze_point_on_display_area_y'] >= 0) & (df['left_gaze_point_on_display_area_y'] <= 1)
+            & (df['right_gaze_point_on_display_area_x'] >= 0) & (df['right_gaze_point_on_display_area_x'] <= 1)
+            & (df['right_gaze_point_on_display_area_y'] >= 0) & (df['right_gaze_point_on_display_area_y'] <= 1)]
+
+    return df
+
 def merge_intervals(df):
     combined_intervals = []
     current_interval = None
@@ -28,7 +37,6 @@ def merge_intervals(df):
             current_interval['duration'] = current_interval['end_time'] - current_interval['start_time']
             current_interval['size'] = len(current_interval['angular_velocities'])
             # Need for a minimal duration criterion 
-            # if current_interval['duration'] > 20
             if current_interval['duration'] < 20:
                 current_interval['type'] = 'shortSaccade'
             combined_intervals.append(current_interval)
@@ -39,7 +47,7 @@ def merge_intervals(df):
     return combined_intervals_df
 
 def calculate_angular_velocity(gaze_origin1, gaze_origin2, time1, time2):
-    delta_time = (time2 - time1) / 1000  # convert microseconds to seconds
+    delta_time = (time2 - time1) / 1000  # Convert microseconds to seconds
     rotation1 = Rotation.from_euler('xyz', gaze_origin1, degrees=True)
     rotation2 = Rotation.from_euler('xyz', gaze_origin2, degrees=True)
     delta_rotation = rotation1.inv() * rotation2
@@ -47,7 +55,6 @@ def calculate_angular_velocity(gaze_origin1, gaze_origin2, time1, time2):
     return angular_velocity * (180 / np.pi)  # Convert radians to degrees
 
 def classify_saccade_or_fixation(df, velocity_threshold):
-    df = df.copy()  # Create a copy of the DataFrame
     df['type'] = 'none'
     df['angular_velocity'] = 0.0
     start = df['device_time_stamp'].iloc[0]
@@ -81,8 +88,6 @@ def process_data(preprocessed_data_path, processed_data_path, velocity_threshold
     # Remove rows with 'nan' values
     df = df.dropna()
     print("length df after dropping rows containing NAN = ", len(df))
-    # Define a velocity threshold to classify saccades
-    velocity_threshold = 20  # Adjust this threshold as needed
 
     # Call the function to classify saccades and fixations based on gaze origin
     df = classify_saccade_or_fixation(df, velocity_threshold)
@@ -90,14 +95,23 @@ def process_data(preprocessed_data_path, processed_data_path, velocity_threshold
     # Sort the DataFrame by 'device_time_stamp' to ensure it's in time order
     df = df.sort_values(by='device_time_stamp')
 
-    # Merge intervals
-    merged_intervals = merge_intervals(df)
+    # Filter all eye movements detected outside of physical display
+    df = filter_out_of_range_gaze(df)
+    print("length df after filtering based on display = ", len(df))
 
+    # Merge intervals
+    df = merge_intervals(df)
+
+    # Normalize durations
+    max_duration = df['duration'].max()
+    min_duration = df['duration'].min()
+    df['normalized_duration'] = (df['duration'] - min_duration) / (max_duration - min_duration)
+    
     # Define the columns to keep
-    columns_to_keep = ['type', 'start_time', 'end_time', 'duration', 'size', 'angular_velocities', 'positionLeft' ,'positionRight']
-    merged_intervals = merged_intervals[columns_to_keep]
+    columns_to_keep = ['type', 'start_time', 'end_time', 'duration', 'normalized_duration', 'size', 'angular_velocities', 'positionLeft' ,'positionRight']
+    df = df[columns_to_keep]
 
     # Save the sorted, combined DataFrame to a CSV file
-    merged_intervals.to_csv(processed_data_path, index=False)
-    print("length df after merging = ", len(merged_intervals))
-    return merged_intervals
+    df.to_csv(processed_data_path, index=False)
+    print("length df after merging = ", len(df))
+    return df
